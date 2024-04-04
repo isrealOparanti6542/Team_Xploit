@@ -5,6 +5,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {console} from "forge-std/Test.sol";
 error AMOUNT_MUST_BE_GREATER_THAN_OR_EQUAL_DUST(uint256 dust);
 error WRONG_PERMIT_PARAMS();
 error INVALID_WORKER_SIGNATURE();
@@ -14,13 +15,17 @@ contract Web3Jobs is Ownable2Step {
 
     uint256 public constant DUST = 1E6;
 
-    bytes32 private constant ASSIGN_TYPE_HASH =
+    bytes32 public constant ASSIGN_TYPE_HASH =
         keccak256(
             "assignJob(bytes memory clientSig,bytes memory workerSig,address worker,uint256 amount,IERC20 token,stopTime)"
         );
-    bytes32 private constant COMPLETION_TYPE_HASH =
+    bytes32 public constant COMPLETION_TYPE_HASH =
         keccak256(
-            "assignJob(bytes memory clientSig,bytes memory workerSig,address worker,uint256 amount,IERC20 token,stopTime)"
+            "completeJob(bytes memory sig,bytes32 id,string memory review,RATING rating,uint96 tip)"
+        );
+    bytes32 public constant RESOLVE_DISPUTE_TYPE_HASH =
+        keccak256(
+            "(bytes memory ownerSig,bytes memory otherSig,bool isClient,bytes32 id)"
         );
 
     mapping(address user => mapping(address token => uint256 amountAvailable)) availableBalance;
@@ -71,6 +76,31 @@ contract Web3Jobs is Ownable2Step {
         bool isClient;
     }
 
+    event DepositComplete(
+        address indexed user,
+        address indexed token,
+        uint256 indexed amount
+    );
+    event JobAssigned(
+        address indexed client,
+        address indexed worker,
+        bytes32 indexed id
+    );
+    event WithdrawalSuccessful(
+        address indexed user,
+        address indexed token,
+        uint256 indexed amount
+    );
+    event JobCompleted(
+        bytes32 indexed id,
+        jobCompletionMessage indexed message
+    );
+    event DisputeResolved(
+        bytes32 indexed id,
+        bool indexed isClient,
+        JobAssignmentMessage indexed message
+    );
+
     modifier nonreentrant() {
         uint8 UNLOCK_KEY;
         assembly {
@@ -109,7 +139,16 @@ contract Web3Jobs is Ownable2Step {
             return;
         }
         IERC20(token_).safeTransfer(sender, amount);
+        emit WithdrawalSuccessful(sender, token_, amount);
     }
+
+    /**
+     * @notice Resolves a dispute
+     * @param ownerSig The owner's signature
+     * @param otherSig The other party's signature
+     * @param isClient Whether the other party is the client
+     * @param id The job's id
+     */
 
     function resolveDispute(
         bytes memory ownerSig,
@@ -120,7 +159,8 @@ contract Web3Jobs is Ownable2Step {
         DisputeMessage memory message = DisputeMessage(id, isClient);
         (bytes32 digest, address recoveredOwner) = fullRecovery(
             message,
-            ownerSig
+            ownerSig,
+            RESOLVE_DISPUTE_TYPE_HASH
         );
         address recoveredOther = recover(digest, otherSig);
         JobAssignmentMessage storage assignmentMessage = JobUniqueId[id];
@@ -153,7 +193,16 @@ contract Web3Jobs is Ownable2Step {
                 }
             }
         }
+        emit DisputeResolved(id, isClient, assignmentMessage);
     }
+
+    /**
+     * @notice Finishes a job and returns the job's id, whether the job is live and the client's completion message
+     * @param id The job's id
+     * @param review The client's review
+     * @param rating The client's rating
+     * @param tip The client's tip
+     */
 
     function completeJob(
         bytes memory sig,
@@ -168,7 +217,11 @@ contract Web3Jobs is Ownable2Step {
             rating,
             tip
         );
-        (, address signedClient) = fullRecovery(message, sig);
+        (, address signedClient) = fullRecovery(
+            message,
+            sig,
+            COMPLETION_TYPE_HASH
+        );
         {
             JobAssignmentMessage storage assignmentMessage = JobUniqueId[id];
             (
@@ -200,7 +253,17 @@ contract Web3Jobs is Ownable2Step {
             }
             JobCompleteId[id] = message;
         }
+        emit JobCompleted(id, message);
     }
+
+    /**
+     * @notice Deposits tokens with a permit, assigns a job and returns the job's id, whether the job is live and the client's completion message
+     * @param permitParams A struct containing the user's permission to transfer tokens on their behalf
+     * @param workerSig The worker's signature
+     * @param worker The worker
+     * @param amount The amount to be assigned to the job
+     * @param token_ The token to be used
+     */
 
     function DepositWithPermitAndAssignJob(
         address token_,
@@ -214,17 +277,35 @@ contract Web3Jobs is Ownable2Step {
         assignJob(workerSig, worker, amount, (token_), timeLine);
     }
 
+    /**
+     * @notice Deposits tokens and assigns a job
+     * @param depositAmount_ The amount to be deposited
+     * @param workerSig The worker's signature
+     * @param worker The worker
+     * @param amount The amount to be assigned to the job
+     * @param token_ The token to be used
+     * @param timeLine The time when the job should stop
+
+     */
+
     function depositAndAssignJob(
         address token_,
-        uint256 Depositamount_,
+        uint256 depositAmount_,
         bytes memory workerSig,
         address worker,
         uint256 amount,
         uint256 timeLine
     ) external payable {
-        deposit(token_, Depositamount_);
+        deposit(token_, depositAmount_);
         assignJob(workerSig, worker, amount, address(token_), timeLine);
     }
+
+    /**
+     * @notice Deposits tokens
+     * @param token_ The token to be deposited
+     * @param amount_ The amount to be deposited
+    
+     */
 
     function deposit(
         address token_,
@@ -240,7 +321,13 @@ contract Web3Jobs is Ownable2Step {
             IERC20(token_).safeTransferFrom(depositor, address(this), amount_);
         }
         availableBalance[depositor][token_] += amount_;
+        emit DepositComplete(depositor, token_, amount_);
     }
+
+    /**
+     * @notice Deposits tokens with a permit and assigns a job
+     * @param permitParams A struct containing the user's permission to transfer tokens on their behalf
+     */
 
     function depositWithPermit(
         address token_,
@@ -258,6 +345,15 @@ contract Web3Jobs is Ownable2Step {
         deposit(token_, permitParams.value);
     }
 
+    /**
+     * @notice Assigns a job
+     * @param sig The worker's signature
+     * @param worker The worker
+     * @param amount The amount to be assigned to the job
+     * @param token The token to be used
+     * @param timeLine The time when the job should stop
+     */
+
     function assignJob(
         bytes memory sig,
         address worker,
@@ -267,22 +363,24 @@ contract Web3Jobs is Ownable2Step {
     ) public {
         address sender = _msgSender();
         uint256 id_ = ++nance[_msgSender()][worker];
-        JobAssignmentMessage memory message = JobAssignmentMessage(
-            sender,
+        JobAssignmentMessage memory message = assignmentGenerator(
             worker,
             amount,
             token,
-            id_,
-            true,
-            block.timestamp,
-            uint256(block.timestamp) + timeLine
+            timeLine,
+            id_
         );
-        (bytes32 digest, address recovered) = fullRecovery(message, sig);
+        (bytes32 digest, address recovered) = fullRecovery(
+            message,
+            sig,
+            ASSIGN_TYPE_HASH
+        );
         if (recovered != worker) {
             revert INVALID_WORKER_SIGNATURE();
         }
         JobUniqueId[digest] = message;
         availableBalance[sender][address(token)] -= amount;
+        emit JobAssigned(sender, worker, digest);
     }
 
     function payFees(address token, uint256 amount) internal {
@@ -339,28 +437,33 @@ contract Web3Jobs is Ownable2Step {
 
     function fullRecovery(
         JobAssignmentMessage memory message,
-        bytes memory sig
+        bytes memory sig,
+        bytes32 type_hash
     ) public view returns (bytes32 digest, address recoveredAddress) {
         bytes32 structHash = hash(message);
-        digest = generateDigest(structHash);
+
+        digest = generateDigest(type_hash, structHash);
+
         recoveredAddress = recover(digest, sig);
     }
 
     function fullRecovery(
         DisputeMessage memory message,
-        bytes memory sig
+        bytes memory sig,
+        bytes32 type_hash
     ) public view returns (bytes32 digest, address recoveredAddress) {
         bytes32 structHash = hash(message);
-        digest = generateDigest(structHash);
+        digest = generateDigest(type_hash, structHash);
         recoveredAddress = recover(digest, sig);
     }
 
     function fullRecovery(
         jobCompletionMessage memory message,
-        bytes memory sig
+        bytes memory sig,
+        bytes32 type_hash
     ) public view returns (bytes32 digest, address recoveredAddress) {
         bytes32 structHash = hash(message);
-        digest = generateDigest(structHash);
+        digest = generateDigest(type_hash, structHash);
         recoveredAddress = recover(digest, sig);
     }
 
@@ -381,12 +484,13 @@ contract Web3Jobs is Ownable2Step {
     }
 
     function generateDigest(
+        bytes32 TypeHash,
         bytes32 structHash
     ) public view returns (bytes32 digest) {
         digest = keccak256(
             abi.encodePacked(
                 structHash,
-                domainSeperatorGenerator(ASSIGN_TYPE_HASH),
+                domainSeperatorGenerator(TypeHash),
                 hex"09_01"
             )
         );
@@ -433,5 +537,33 @@ contract Web3Jobs is Ownable2Step {
         for (uint i = 0; i < ids.length; i++) {
             jobData[i] = getCompletedJobData(ids[i]);
         }
+    }
+
+    function getUserBalance(
+        address user,
+        address token
+    ) public view returns (uint256) {
+        return availableBalance[user][token];
+    }
+
+    function assignmentGenerator(
+        address worker,
+        uint256 amount,
+        address token,
+        uint256 timeline,
+        uint256 id_
+    ) public view returns (JobAssignmentMessage memory message) {
+        address sender = _msgSender();
+
+        message = JobAssignmentMessage(
+            sender,
+            worker,
+            amount,
+            token,
+            id_,
+            true,
+            block.timestamp,
+            uint256(block.timestamp) + timeline
+        );
     }
 }
