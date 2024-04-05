@@ -11,8 +11,8 @@ function job() {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axios.get('');
-        setJobs(response)
+        const response = await axios.get('https://x-ploit-backend.onrender.com/api/get-jobs');
+        setJobs(response.data)
       } catch (error) {
         console.log
       }
@@ -53,7 +53,7 @@ function job() {
             <div className='flex flex-col space-y-4 px-8'>
               <h2 className='text-xl font-bold text-white'>{user.title}</h2>
               <div className='flex space-x-4'>
-                <div className='bg-gray-600 text-white rounded-md px-4 py-1  text-xs capitalize'>{user.tag}</div>
+                <div className='bg-gray-600 text-white rounded-md px-4 py-1  text-xs capitalize'>{user.tags}</div>
                 <div className='bg-green-300 text-green-[.09]  px-1 py-1 text-xs capitalize '><span className="text-green-900 font-bold">{user.price}</span></div>
               </div>
               <p className='text-gray-400 text-sm'>{user.description}</p>
