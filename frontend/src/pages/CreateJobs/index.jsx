@@ -4,41 +4,27 @@ import Payment from './../../components/payment';
 
 function CreateGig() {
 
-  const [selectedToken, setSelectedToken] = useState('Default');
-  const [amount, setAmount] = useState('');
+  const [jobsData, setJobsData] = useState({
+    jobTitle:'',
+      tags:'',
+      price:'',
+      description:'',
+      amount:'',
+      selectedToken:''
+  });
   
-
-  const [jobTitle, setJobTitle] = useState('');
-   
-  const [price, setPrice] = useState('');
-  const [tags, setTags] = useState([]);
-
-   
- const [description, setDescription] = useState('');
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const jobData = {
-      jobTitle,
-      tags,
-      price,
-      description,
-      amount,
-      selectedToken
-    };
-
-    console.log(jobData)
+    console.log(jobsData)
     try {
-      const response = await axios.post('/api/jobs', jobData); // Replace '/api/jobs' with your backend endpoint
+      const response = await axios.post('/api/jobs', jobsData); // Replace '/api/jobs' with your backend endpoint
       console.log('Job submitted:', response.data);
       // Clear form fields after successful submission (optional)
-      setJobTitle('');
-      setTags([]);
-      setPrice('');
-      setDescription('');
+      
     } catch (error) {
       console.error('Error submitting job:', error);
     }
+    setJobsData({})
   };
 
   return (
@@ -51,16 +37,16 @@ function CreateGig() {
           <input 
             type='text'
             id='jobTitle'
-            value={jobTitle}
-            onChange={(e) => setJobTitle(e.target.value)}
+            value={jobsData.jobTitle}
+            onChange={(e) => setJobsData({...jobsData, jobTitle:e.target.value})}
             className='w-full bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
           />
         </div>
         <div className='w-full'>
             <label htmlFor='tags' className='text-gray-200 block mb-2'>Add Tag</label>
             <input 
-              value={tags} 
-              onChange={(e) => setTags(e.target.value)} 
+              value={jobsData.tags} 
+              onChange={(e) => setJobsData({...jobsData, tags:e.target.value})} 
               className='react-tagsinput-input bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
     
             />
@@ -70,8 +56,8 @@ function CreateGig() {
           <input 
             type='text' 
             id='price' 
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            value={jobsData.price}
+            onChange={(e) => setJobsData({...jobsData, price:e.target.value})}
             className='w-full bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
           />
         </div>
@@ -80,8 +66,8 @@ function CreateGig() {
           <label htmlFor='description' className='text-gray-200 block mb-2'>Job Description</label>
           <textarea
             id='description'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={jobsData.description}
+            onChange={(e) => setJobsData({...jobsData, description:e.target.value})}
             className='w-full bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
           />
         </div>
@@ -91,8 +77,8 @@ function CreateGig() {
           <div className='flex space-x-4'> 
             <div className='w-1/2'>
               <select 
-                value={selectedToken}
-                onChange={(e) => setSelectedToken(e.target.value)}
+                value={jobsData.selectedToken}
+                onChange={(e) => setJobsData({...jobsData, selectedToken:e.target.value})}
                 className='w-full bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
               >
                 <option value='Default'>token</option>
@@ -104,8 +90,8 @@ function CreateGig() {
               <input
                 type='text'
                 placeholder='Amount'
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)} 
+                value={jobsData.amount}
+                onChange={(e) => setJobsData({...jobsData, amount:e.target.value})}
                 className='w-full bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
               />
             </div>
