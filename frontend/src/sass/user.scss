@@ -1,0 +1,146 @@
+.container__user{
+    display: grid;
+    grid-template-columns: 25% 75%;
+    height: 100%;
+
+}
+.AppBarContainer{
+
+    // margin-top: 12rem;
+    background-color:rgb(30, 29, 28);
+    // width: 30%;
+    border-radius: 50px;
+    position: relative;
+    padding: 1.6rem;
+overflow: hidden;
+font-family: "Space Grotesk";
+
+}
+.profileContainer{
+    display: flex;
+    text-align: center;
+}
+.profileImgContainer{
+    width: 20%;
+    height: 3rem;
+    transform: translateX(20%);
+}
+.profileImg{
+width: 3.6rem;
+
+}
+.profileTxt{
+    overflow: hidden;
+    font-weight: bold;
+    color: white;
+}
+.ptx{
+    transform: translateX(20%);
+}
+.search{
+    margin-top: 3.2rem;
+    height: 3.5rem;
+   position: relative;
+  
+    &__input{
+        height: 3.0rem;
+        width: 15.6rem;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 20px;
+        background-color: rgb(30, 29, 28);
+        border: 1px solid rgba(128, 128, 128, 0.573);
+        padding: 1.2rem;
+        ::placeholder{
+         color: green;
+        }
+    }
+    &__icon{
+        width: 1.4rem;
+        position: absolute;
+        left: 75%;
+        top: 35%;
+        transform: translate(-75%,-35%);
+    }
+}
+
+.AppBar__Nav{
+    // margin-top:3.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: .8rem;
+    &_Item{
+        display: flex;
+        margin-bottom: 2.4rem;
+        gap: 10%;
+        padding-left: 1.8rem;
+        color: gray;
+        font-weight: 600;
+        border: 1px ;
+        cursor: pointer;
+        > p {
+            :focus{
+                outline: none;
+            }
+            :hover{
+                outline: none;
+            }
+        }
+       
+    }
+    &__Img{
+width: 1.2rem;
+    }
+}
+
+.linkOthers{
+    margin-top: 4.8rem;
+    color: gray;
+    &__Item{
+        display: flex;
+        gap: 20%;
+        margin-bottom: 1.8rem;
+        padding-left: 1.8rem;
+    }
+    &__img{
+        &--Github{
+            fill: gray;
+            stroke: gray;
+        }
+        &--door{
+            fill: blue;
+            stroke: blue;
+            width: 1.4rem;
+        }
+    }
+}
+
+.divider{
+    display: flex;
+    font-size: 1rem;
+    color: white;
+    margin-top: 2.8rem;
+    justify-content:space-around;
+}
+
+.classification{
+    padding-bottom: 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 3px 3px rgba(0, 0, 0,.1);
+    padding-inline: 1rem;
+    
+}
+
+.line{
+    border-right: 1px solid rgba(255, 255, 255, 0.225);
+}
+
+.controlDisplay{
+    display: none;
+}
+.center__container{
+    position: relative;
+    height: 100%;
+}
