@@ -12,7 +12,7 @@ const Navbar = () => {
     return(
         <> 
  
-             <header className=" bg-opacity-9 mx-9 rounded-full border-2 border-stone-500 bg-secondary-dark p-2 ">
+          <header className=" bg-opacity-9 mx-9 rounded-full border-2 border-stone-500 bg-secondary-dark p-2 ">
                <nav className="flex justify-between items-center w-[82%]   mx-auto">
                 <div>
                    <h1 className="font-bold text-lg text-white">Web3 Lance</h1>
@@ -40,7 +40,7 @@ const Navbar = () => {
                     </ul>
                 </div>
                 <div className="flex items-center gap-6">
-                        <button className="bg-primary-dark text-white px-5 py-2 rounded-full hover:bg-[#87acec]">Create Jobs</button>
+                        <button className="bg-primary-dark text-white px-5 py-2 rounded-full hover:bg-[#87acec]"><Link to={'/createjobs'}>Create Jobs</Link></button>
                         
                     </div>
 

@@ -2,7 +2,7 @@ import React from 'react'
 import Navbar from '../../components/Navbar'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { ToastContainer, toast } from 'react-toast'
+// import { ToastContainer, toast } from 'react-toast'
 
 
 
@@ -14,12 +14,12 @@ function job() {
         const response = await axios.get('https://x-ploit-backend.onrender.com/api/get-jobs');
         setJobs(response.data)
       } catch (error) {
-        console.log
+        
       }
     })();
   }, [])
   const success = () => {
-    toast('Job application successful')
+     alert('Job Created')
   }
     // job = [
     //     {   
@@ -61,7 +61,6 @@ function job() {
               onClick={success}>
                 Apply
               </button>
-              <ToastContainer />
             </div>
           </div>
         ))) : <div className='font-bold text-white'>No available gig</div>}

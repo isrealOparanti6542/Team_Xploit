@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Navbar from '../../components/Navbar'
 import Payment from './../../components/payment';
-
+import axios from 'axios'
+import { Link } from "react-router-dom"
 function CreateGig() {
 
   const [jobsData, setJobsData] = useState({
@@ -10,7 +11,7 @@ function CreateGig() {
       price:'',
       description:'',
       amount:'',
-      selectedToken:''
+      token:''
   });
   
   const handleSubmit = async (event) => {
@@ -76,15 +77,13 @@ function CreateGig() {
           <h2 className='text-xl font-bold text-white'>Payment</h2>
           <div className='flex space-x-4'> 
             <div className='w-1/2'>
-              <select 
-                value={jobsData.selectedToken}
-                onChange={(e) => setJobsData({...jobsData, selectedToken:e.target.value})}
+            <input
+                type='text'
+                placeholder='Token'
+                value={jobsData.token}
+                onChange={(e) => setJobsData({...jobsData, token:e.target.value})}
                 className='w-full bg-gray-900 text-white rounded-md border border-gray-700 px-4 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500'
-              >
-                <option value='Default'>token</option>
-                <option value='ETH'>Ethereum</option>
-                <option value='BTC'>Bitcoin</option>
-              </select>
+              />
             </div>
             <div className='w-1/2'>
               <input
@@ -97,7 +96,7 @@ function CreateGig() {
             </div>
           </div>
           <button type='submit'  className='bg-primary-dark hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400'>
-          Create Job
+         <Link to={'/jobs'}>Create Job</Link> 
         </button>
         </div>
       </form>
