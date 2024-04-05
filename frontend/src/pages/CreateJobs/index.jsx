@@ -17,7 +17,7 @@ function CreateGig() {
     event.preventDefault();
     console.log(jobsData)
     try {
-      const response = await axios.post('/api/jobs', jobsData); // Replace '/api/jobs' with your backend endpoint
+      const response = await axios.post('https://x-ploit-backend.onrender.com/api/create-jobs', jobsData); // Replace '/api/jobs' with your backend endpoint
       console.log('Job submitted:', response.data);
       // Clear form fields after successful submission (optional)
       
