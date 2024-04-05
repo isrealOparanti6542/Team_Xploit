@@ -22,7 +22,7 @@ const SignUp = () => {
                       LOGO
                     </p>
                     
-                    <div className="bg-opacity-10 flex justify-center bg-white bg-blur py-8 mx-auto shadow rounded-[10px] sm:px-10 w-[50%] relative border-2 border-stone-500">
+                    <div className="bg-opacity-10 flex justify-center  bg-blur py-8 mx-auto shadow rounded-[10px] sm:px-10 w-[50%] relative border-2 border-stone-500">
                               
                         <form className="flex flex-col justify-center space-y-3  rounded-lg w-full mt-2 w-full">
                         <div className="text-white mt-4 text-center">Create Account</div>

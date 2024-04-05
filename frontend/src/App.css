@@ -1,12 +1,4 @@
-.App{
-  height: 100vh;
-  background: url('../src/assets/1.jpeg');
-  background-blend-mode: screen;
-  background-size: cover;
-  background-attachment: fixed;    
-  padding: 0 !important;
-  margin: 0 !important;
-}
+ 
 #container{
  
    height: 100vh !important;

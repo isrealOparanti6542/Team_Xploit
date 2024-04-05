@@ -2,7 +2,7 @@ import React,{ useState } from "react";
 import Navbar from "../../components/Navbar"; 
 import signUpImage from "../../assets/2.jpeg" 
 // import signUpImage1 from "../../assets/1.jpeg" 
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // import axios from "axios";
 
@@ -32,7 +32,7 @@ const Home = () => {
                     </div>
 
                     <div className="font-bold text-white text-center mt-10">
-                        <button className="font-bold bg-primary-dark p-4 px-12 rounded-full">Browse Jobs</button>
+                        <Link to={'/jobs'}><button className="font-bold bg-primary-dark p-4 px-12 rounded-full">Browse Jobs</button></Link>
                     </div>
 
         </div>           

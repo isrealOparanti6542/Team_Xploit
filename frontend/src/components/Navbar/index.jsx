@@ -1,5 +1,5 @@
 import React,{ useState } from "react";
- 
+import { Link, useNavigate } from "react-router-dom"; 
   
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,7 +12,7 @@ const Navbar = () => {
     return(
         <> 
  
-             <header className=" bg-opacity-9 mx-9 rounded-full border-2 border-stone-500 bg-secondry-dark p-2 ">
+             <header className=" bg-opacity-9 mx-9 rounded-full border-2 border-stone-500 bg-secondary-dark p-2 ">
                <nav className="flex justify-between items-center w-[82%]   mx-auto">
                 <div>
                    <h1 className="font-bold text-lg text-white">Web3 Lance</h1>
@@ -31,7 +31,7 @@ const Navbar = () => {
                     className={`duration-500 md:static absolute text-white md:min-h-fit min-h-[60vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5 ${isMenuOpen ? 'top-[9%]' : ''}`}>
                     <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
                     <li>
-                        <a className="hover:text-gray-500" href="#">Jobs</a>
+                    <Link to="/jobs" className="menu-item mb-2" >Jobs</Link>
                     </li>
                     <li>
                         <a className="hover:text-gray-500" href="#">Resourses</a>
