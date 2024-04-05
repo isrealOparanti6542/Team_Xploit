@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+.container__select{
+    position: relative;
+    height: 100%;
+  
+}
+.select__stacks {
+    background-color:rgb(30, 29, 28);
+    border-radius: 25px;
+    padding: 4rem 1.2rem;
+    // font-weight: bold;
+    color: white;
+    display: grid;
+    grid-template-rows: 20% 15% 15% 25% 25% ;
+ height: 28rem;
+ width: 32rem;
+margin-top: 20rem;
+}
+.preffered__stacks{
+font-family: "Space Grotesk";
+font-size: 1.6rem;
+}
+.center{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+}
+.require{
+    opacity: .7;
+    color: whitesmoke;
+    font-size: 1rem;
+    font-family: 'Lato';
+}
+
+.selected{
+    background-color: gray;
+    border-radius: 6px;
+    font-size: 1.3rem;
+    padding-inline: .3rem;
+// marg
+}
